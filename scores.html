@@ -20,13 +20,35 @@
         }
         li {
             background-color: #2a2a2a;
-            margin: 5px 0;
+            margin: 10px 0;
             padding: 10px;
             border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         .highlight {
             color: red;
             font-weight: bold;
+        }
+        input {
+            margin-left: 10px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+        button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkred;
         }
     </style>
 </head>
@@ -45,9 +67,38 @@
                 const data = await response.json();
 
                 const scoresList = document.getElementById('scores-list');
-                data.scores.forEach(score => {
+                data.scores.forEach((score, index) => {
                     const listItem = document.createElement('li');
-                    listItem.innerHTML = `${score.name}: <span class="highlight">${score.score}</span>`;
+
+                    // Name and initial score display
+                    const scoreDisplay = document.createElement('span');
+                    scoreDisplay.innerHTML = `${score.name}: <span class="highlight" id="score-${index}">${score.score}</span>`;
+
+                    // Input field for adding to score
+                    const inputField = document.createElement('input');
+                    inputField.type = 'number';
+                    inputField.placeholder = 'Add value';
+                    inputField.id = `input-${index}`;
+
+                    // Button to update score
+                    const updateButton = document.createElement('button');
+                    updateButton.textContent = 'Update';
+                    updateButton.onclick = () => {
+                        const inputValue = parseInt(inputField.value, 10);
+                        if (!isNaN(inputValue)) {
+                            const currentScore = parseInt(document.getElementById(`score-${index}`).textContent, 10);
+                            const newScore = currentScore + inputValue;
+                            document.getElementById(`score-${index}`).textContent = newScore;
+                            inputField.value = ''; // Clear input field
+                        }
+                    };
+
+                    // Append elements to list item
+                    listItem.appendChild(scoreDisplay);
+                    listItem.appendChild(inputField);
+                    listItem.appendChild(updateButton);
+
+                    // Append list item to the scores list
                     scoresList.appendChild(listItem);
                 });
             } catch (error) {
